@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/auth';
-import '../styles/auth.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -16,12 +15,15 @@ const Login = () => {
     setError('');
 
     try {
-      const data = await loginUser({ username, password });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      const response = await loginUser({ username, password });
+
+      // Save token and user data safely
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));   // Save full response
+
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid credentials');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -32,7 +34,7 @@ const Login = () => {
       <div className="login-box">
         <div className="login-header">
           <h1>🛍️ Bishoftu Store</h1>
-          <p>Inventory & Sales Management System</p>
+          <p>Inventory & Sales Management</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
@@ -44,7 +46,7 @@ const Login = () => {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              placeholder="Enter username"
               required
             />
           </div>
@@ -55,7 +57,7 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Enter password"
               required
             />
           </div>
@@ -66,7 +68,7 @@ const Login = () => {
         </form>
 
         <div className="demo-credentials">
-          <small>Demo: <strong>admin</strong> / <strong>admin123</strong></small>
+          <small>Demo → <strong>admin</strong> / <strong>admin123</strong></small>
         </div>
       </div>
     </div>
